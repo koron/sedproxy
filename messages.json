@@ -1,0 +1,42 @@
+[
+  {
+    "src": "店主([a-zA-Z]+)",
+    "rep": "$1 the owner"
+  },
+  {
+    "src": "最近の記事",
+    "rep": "Recent posts"
+  },
+  {
+    "src": "いらっしゃいませ",
+    "rep": "Welcome to my site"
+  },
+  {
+    "src": "沿革",
+    "rep": "History"
+  },
+  {
+    "src": "ホーム",
+    "rep": "Home"
+  },
+  {
+    "src": "ニュース",
+    "rep": "News"
+  },
+  {
+    "src": "記事",
+    "rep": "Articles"
+  },
+  {
+    "src": "ブログ",
+    "rep": "Blog"
+  },
+  {
+    "src": "タグ",
+    "rep": "Tags"
+  },
+  {
+    "src": "ソフトウェア",
+    "rep": "Software"
+  }
+]
