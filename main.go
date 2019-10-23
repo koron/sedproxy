@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"mime"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -110,9 +111,20 @@ func readMessageFile(name string) error {
 	return nil
 }
 
+const mtHTML = "text/html"
+
+func isHTML(s string) bool {
+	mt, _, err := mime.ParseMediaType(s)
+	if err != nil {
+		log.Printf("failed to parse media type: %s", s, err)
+		return false
+	}
+	return mt == mtHTML
+}
+
 func filterResponse(r *http.Response) error {
 	ct := r.Header.Get("Content-Type")
-	if ct != "text/html" {
+	if !isHTML(ct) {
 		return nil
 	}
 	st := time.Now()
