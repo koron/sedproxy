@@ -67,6 +67,8 @@ Example:
 
 ### Structured Message JSON format
 
+Example:
+
 ```json
 {
   "": [
@@ -86,6 +88,16 @@ Example:
     },
     {
       "src": "message#4 wich applied to only /foo.* (prefix match)",
+      "rep": "xxx"
+    },
+  ],
+  "/bar/" [
+    {
+      "src": "message#5 wich applied to only /bar/.* (prefix match)",
+      "rep": "xxx"
+    },
+    {
+      "src": "message#6 wich applied to only /bar/.* (prefix match)",
       "rep": "xxx"
     },
   ]
