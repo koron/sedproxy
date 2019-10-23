@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"io"
@@ -14,7 +13,6 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"regexp"
 	"strconv"
 	"time"
 )
@@ -26,28 +24,6 @@ func main() {
 		log.Fatal(err)
 	}
 }
-
-type Message struct {
-	Src  string `json:"src"`
-	Repl string `json:"rep"`
-
-	rx   *regexp.Regexp
-	repl []byte
-}
-
-func (m *Message) prepare() error {
-	rx, err := regexp.Compile(m.Src)
-	if err != nil {
-		return err
-	}
-	m.rx = rx
-	m.repl = []byte(m.Repl)
-	return nil
-}
-
-type Messages []*Message
-
-var allMsgs Messages
 
 var (
 	optAccessLog bool
@@ -92,25 +68,6 @@ func run(ctx context.Context) error {
 	return srv.ListenAndServe()
 }
 
-func readMessageFile(name string) error {
-	f, err := os.Open(name)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	err = json.NewDecoder(f).Decode(&allMsgs)
-	if err != nil {
-		return err
-	}
-	for _, m := range allMsgs {
-		err := m.prepare()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 const mtHTML = "text/html"
 
 func isHTML(s string) bool {
@@ -138,7 +95,8 @@ func filterResponse(r *http.Response) error {
 }
 
 func modifyResponse(r *http.Response) error {
-	b, err := replaceBody(r.Body)
+	msgs := getMessages(r.Request.URL.Path)
+	b, err := replaceBody(r.Body, msgs)
 	if err != nil {
 		return err
 	}
@@ -149,12 +107,12 @@ func modifyResponse(r *http.Response) error {
 	return nil
 }
 
-func replaceBody(src io.ReadCloser) ([]byte, error) {
+func replaceBody(src io.ReadCloser, msgs Messages) ([]byte, error) {
 	b, err := ioutil.ReadAll(src)
 	if err != nil {
 		return nil, err
 	}
-	for _, m := range allMsgs {
+	for _, m := range msgs {
 		b = m.rx.ReplaceAll(b, m.repl)
 	}
 	return b, nil
