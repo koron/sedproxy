@@ -50,6 +50,7 @@ func run(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	optHost = tu.Host
 
 	if optMsgs == "" && optMsgs2 == "" {
 		return errors.New("no messages. check -messages or -structuredmessages")
@@ -71,7 +72,7 @@ func run(ctx context.Context) error {
 	}
 
 	rp := httputil.NewSingleHostReverseProxy(tu)
-	rp.Director = filterRequest
+	rp.Director = wrapDirector(rp.Director)
 	rp.ModifyResponse = filterResponse
 
 	srv := &http.Server{
@@ -97,8 +98,13 @@ func isHTML(s string) bool {
 	return mt == mtHTML
 }
 
-func filterRequest(r *http.Request) {
-	//log.Printf("HERE_A: %+v", r.Header)
+func wrapDirector(orig func(*http.Request)) func(*http.Request) {
+	return func(r *http.Request) {
+		orig(r)
+		if optHost != "" {
+			r.Host = optHost
+		}
+	}
 }
 
 func filterResponse(r *http.Response) error {
