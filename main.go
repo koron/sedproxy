@@ -26,7 +26,10 @@ func main() {
 }
 
 var (
+	optHost      string
 	optAccessLog bool
+	optMsgs      string
+	optMsgs2     string
 )
 
 func run(ctx context.Context) error {
@@ -36,7 +39,8 @@ func run(ctx context.Context) error {
 	addr := flag.String("addr", ":8000",
 		`reverse proxy server address and port`)
 	flag.BoolVar(&optAccessLog, "accesslog", false, `output access log`)
-	msgfile := flag.String("messages", "", `message file`)
+	flag.StringVar(&optMsgs, "messages", "", `message file, exclusive with -structuredmessages"`)
+	flag.StringVar(&optMsgs2, "structuredmessages", "", `structured message file, exclusive with -messages`)
 	flag.Parse()
 
 	if *target == "" {
@@ -47,14 +51,27 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	if *msgfile != "" {
-		err := readMessageFile(*msgfile)
+	if optMsgs == "" && optMsgs2 == "" {
+		return errors.New("no messages. check -messages or -structuredmessages")
+	}
+	if optMsgs != "" && optMsgs2 != "" {
+		return errors.New("choose one of -messages or -structuredmessages")
+	}
+	if optMsgs != "" {
+		err := readMessageFile(optMsgs)
+		if err != nil {
+			return err
+		}
+	}
+	if optMsgs2 != "" {
+		err := defaultStructuredMessages.load(optMsgs2)
 		if err != nil {
 			return err
 		}
 	}
 
 	rp := httputil.NewSingleHostReverseProxy(tu)
+	rp.Director = filterRequest
 	rp.ModifyResponse = filterResponse
 
 	srv := &http.Server{
@@ -62,21 +79,26 @@ func run(ctx context.Context) error {
 		Handler: rp,
 	}
 
-	if optAccessLog {
-		log.Printf("reveser proxy is listening %s\n", *addr)
-	}
+	log.Printf("reveser proxy is listening %s\n", *addr)
 	return srv.ListenAndServe()
 }
 
 const mtHTML = "text/html"
 
 func isHTML(s string) bool {
+	if s == "" {
+		return false
+	}
 	mt, _, err := mime.ParseMediaType(s)
 	if err != nil {
-		log.Printf("failed to parse media type: %s", s, err)
+		log.Printf("failed to parse media type: %s", err)
 		return false
 	}
 	return mt == mtHTML
+}
+
+func filterRequest(r *http.Request) {
+	//log.Printf("HERE_A: %+v", r.Header)
 }
 
 func filterResponse(r *http.Response) error {
@@ -90,7 +112,9 @@ func filterResponse(r *http.Response) error {
 		return err
 	}
 	d := time.Since(st)
-	log.Printf("rewrite %s in %s", r.Request.URL.Path, d)
+	if optAccessLog {
+		log.Printf("rewrite %s in %s", r.Request.URL.Path, d)
+	}
 	return nil
 }
 
