@@ -48,12 +48,17 @@ type Messages []*Message
 
 var allMsgs Messages
 
+var (
+	optAccessLog bool
+)
+
 func run(ctx context.Context) error {
 	target := flag.String("target",
 		os.Getenv("REVERSE_PROXY_TARGET_URL"),
 		`reverse proxy target URL`)
 	addr := flag.String("addr", ":8000",
 		`reverse proxy server address and port`)
+	flag.BoolVar(&optAccessLog, "accesslog", false, `output access log`)
 	msgfile := flag.String("messages", "", `message file`)
 	flag.Parse()
 
@@ -80,7 +85,9 @@ func run(ctx context.Context) error {
 		Handler: rp,
 	}
 
-	log.Printf("reveser proxy is listening %s\n", *addr)
+	if optAccessLog {
+		log.Printf("reveser proxy is listening %s\n", *addr)
+	}
 	return srv.ListenAndServe()
 }
 
