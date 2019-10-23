@@ -36,6 +36,7 @@ sedproxy [OPTIONS]
 * `-addr` - Address and port which reverse proxy to listen.
 * `-target` - Target HTTP server to rewriting.
 * `-messages` - JSON file for substitutions.
+* `-structuredmessages` JSON file for substitutions with path limitation.
 
 ### Message JSON format
 
@@ -63,3 +64,30 @@ Example:
 ```
 
 ![](./sample.png)
+
+### Structured Message JSON format
+
+```json
+{
+  "": [
+    {
+      "src": "message#1 wich applied to globally",
+      "rep": "xxx"
+    },
+    {
+      "src": "message#2 wich applied to globally",
+      "rep": "xxx"
+    },
+  ],
+  "/foo" [
+    {
+      "src": "message#3 wich applied to only /foo.* (prefix match)",
+      "rep": "xxx"
+    },
+    {
+      "src": "message#4 wich applied to only /foo.* (prefix match)",
+      "rep": "xxx"
+    },
+  ]
+}
+```
