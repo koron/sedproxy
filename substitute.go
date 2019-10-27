@@ -1,10 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 )
 
 // SubstItem is an item for substitution.
@@ -64,7 +68,10 @@ var defaultMtypes = map[string]struct{}{
 	"text/html": struct{}{},
 }
 
-func (sg *SubstGroup) isMatch(mt, path string) (bool) {
+func (sg *SubstGroup) isMatch(mt, path string) bool {
+	if mt == "" {
+		return false
+	}
 	if len(sg.Items) == 0 {
 		return false
 	}
@@ -75,7 +82,7 @@ func (sg *SubstGroup) isMatch(mt, path string) (bool) {
 	return sg.rxPath.MatchString(path)
 }
 
-func (sg *SubstGroup) replaceAll(data []byte) []byte{
+func (sg *SubstGroup) replaceAll(data []byte) []byte {
 	for _, items := range sg.Items {
 		data = items.replaceAll(data)
 	}
@@ -143,8 +150,51 @@ func LoadSubstitutions(name string) (Substitutions, error) {
 	return v, nil
 }
 
+func mediaType(r *http.Response) string {
+	ct := r.Header.Get("Content-Type")
+	if ct == "" {
+		return ""
+	}
+	mt, _, err := mime.ParseMediaType(ct)
+	if err != nil {
+		return ""
+	}
+	return mt
+}
+
+func readBody(r *http.Response) ([]byte, error) {
+	return ioutil.ReadAll(r.Body)
+}
+
+func setBody(r *http.Response, b []byte) {
+	br := bytes.NewReader(b)
+	r.Body = ioutil.NopCloser(br)
+	r.Header.Set("Content-Length", strconv.Itoa(br.Len()))
+	r.ContentLength = int64(br.Len())
+}
+
 // Rewrite rewrites http.Response by substitutions.
-func (s *Substitutions) RewriteResponse(r *http.Response) error {
-	// TODO: rewrite
+func (s Substitutions) RewriteResponse(r *http.Response) error {
+	mt := mediaType(r)
+	path := r.Request.URL.Path
+	var data []byte
+	for _, sg := range s {
+		if !sg.isMatch(mt, path) {
+			continue
+		}
+		if data == nil {
+			// read request body once.
+			d, err := readBody(r)
+			if err != nil {
+				return err
+			}
+			data = d
+		}
+		data = sg.replaceAll(data)
+	}
+	if data == nil {
+		return nil
+	}
+	setBody(r, data)
 	return nil
 }
