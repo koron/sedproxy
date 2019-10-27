@@ -174,7 +174,7 @@ func setBody(r *http.Response, b []byte) {
 }
 
 // Rewrite rewrites http.Response by substitutions.
-func (s Substitutions) RewriteResponse(r *http.Response) error {
+func (s Substitutions) Rewrite(r *http.Response) error {
 	mt := mediaType(r)
 	path := r.Request.URL.Path
 	var data []byte
