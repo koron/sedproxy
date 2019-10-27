@@ -86,7 +86,7 @@ func (sg *SubstGroup) replaceAll(data []byte) []byte {
 	for _, items := range sg.Items {
 		data = items.replaceAll(data)
 	}
-	return nil
+	return data
 }
 
 func (sg *SubstGroup) prepare() error {
