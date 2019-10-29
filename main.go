@@ -30,7 +30,7 @@ var defaultSubstitution Substitutions
 
 func run(ctx context.Context) error {
 	flag.StringVar(&optTarget, "target",
-		os.Getenv("REVERSE_PROXY_TARGET_URL"),
+		os.Getenv("SEDPROXY_TARGET"),
 		`reverse proxy target URL`)
 	flag.StringVar(&optAddr, "addr", ":8000",
 		`reverse proxy server address and port`)

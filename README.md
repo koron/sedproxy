@@ -6,11 +6,13 @@
 
 sedproxy is a HTTP reverse proxy, which rewrite HTML with regular expressions.
 
+![](./sample.png)
+
 ## Getting started
 
-Go 1.13.1 or above required.
+Go 1.13.3 or above is recommended.
 
-Install or updated sedproxy:
+To install or update sedproxy:
 
 ```console
 $ go get -u -i github.com/koron/sedproxy
@@ -33,73 +35,70 @@ sedproxy [OPTIONS]
 
 ### Options
 
+* `-accesslog` - Output access log to STDERR (default disabled)
 * `-addr` - Address and port which reverse proxy to listen.
-* `-target` - Target HTTP server to rewriting.
 * `-messages` - JSON file for substitutions.
-* `-structuredmessages` JSON file for substitutions with path limitation.
+* `-target` - Target HTTP server to rewriting.
+
+    `SEDPROXY_TARGET` environment variable can be used, instead of this.
 
 ### Message JSON format
 
-Example:
+The schema of message file is (in [JSON schema][jsonschema] in YAML format):
 
-```json
-[
-  {
-    "src": "店主([a-zA-Z]+)",
-    "rep": "$1 the owner"
-  },
-  {
-    "src": "ホーム",
-    "rep": "Home"
-  },
-  {
-    "src": "ニュース",
-    "rep": "News"
-  },
-  {
-    "src": "ブログ",
-    "rep": "Blog"
-  },
-]
+```yaml
+type: array
+items:
+
+  title: Substitution Group
+  description: |
+    A substitution group is a pair of `mediaTypes`, `path` and `items`.
+
+    A substitution group will be evaluated when both `mediaTypes` and `path`
+    conditions are passed.
+
+    Actual substitutions are in `items`.
+  type: object
+  properties:
+    mediaTypes:
+      type: array
+      items:
+        type: string
+      description: |
+        Array of media types which this substitution group is applied to.
+        Media type is core part of `Content-Type`.
+        For example, the media type of `text/html; charset=utf8` is `text/html`.
+        When one of the media types was matched with `Content-Type`,
+        this substitution group will be evaluated.
+        When this is omited, only `text/html` will be used as default.
+        So you should put `text/javascript`, if you want to apply a
+        substitution group to JavaScript.
+    path:
+      type: string
+      description: |
+        A regexp pattern to match with "path" of HTTP request.
+
+        See <https://golang.org/pkg/regexp/syntax/> for the syntax.
+    items:
+      type: array
+      items:
+
+        title: A substitution pair.
+        description: |
+          A pair of regexp pattern and replacement text.
+        type: object
+        properties:
+          src:
+            type: string
+            description: |
+              A regexp pattern to match with "body" of HTTP response.
+              See <https://golang.org/pkg/regexp/syntax/> for the syntax.
+          repl:
+            type: string
+            description: |
+              Replacement text.  Captured texts can be refered by `$1` or so.
+              See <https://golang.org/pkg/regexp/#Regexp.Expand> for the
+              expansion.
 ```
 
-![](./sample.png)
-
-### Structured Message JSON format
-
-Example:
-
-```json
-{
-  "": [
-    {
-      "src": "message#1 wich applied to globally",
-      "rep": "xxx"
-    },
-    {
-      "src": "message#2 wich applied to globally",
-      "rep": "xxx"
-    },
-  ],
-  "/foo" [
-    {
-      "src": "message#3 wich applied to only /foo.* (prefix match)",
-      "rep": "xxx"
-    },
-    {
-      "src": "message#4 wich applied to only /foo.* (prefix match)",
-      "rep": "xxx"
-    },
-  ],
-  "/bar/" [
-    {
-      "src": "message#5 wich applied to only /bar/.* (prefix match)",
-      "rep": "xxx"
-    },
-    {
-      "src": "message#6 wich applied to only /bar/.* (prefix match)",
-      "rep": "xxx"
-    },
-  ]
-}
-```
+See <./messages.json> for example.
