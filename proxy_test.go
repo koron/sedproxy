@@ -69,7 +69,9 @@ func testGet(t *testing.T, path string, exp string) {
 	}
 }
 
-func Test_xxx001_html(t *testing.T) {
+func Test_001_simple_substitutions(t *testing.T) {
 	testGet(t, "/001/abc.html", "これは 1234 円です\n")
 	testGet(t, "/001/def.html", "これは 999999 円です\n")
+	testGet(t, "/001/ghi.html",
+		"これは 1 円です\nこれは 2 円です\nこれは 3 円です\n")
 }
