@@ -147,7 +147,7 @@ func LoadSubstitutions(name string) (Substitutions, error) {
 }
 
 // Rewrite rewrites http.Response by substitutions.
-func (s Substitutions) Rewrite(r0 *http.Response) error {
+func (s Substitutions) Rewrite(r0 *http.Response) (bool, error) {
 	r := newResponse(r0)
 	mt := r.mediaType()
 	path := r.path()
@@ -160,14 +160,14 @@ func (s Substitutions) Rewrite(r0 *http.Response) error {
 			// read request body once.
 			d, err := r.readBody()
 			if err != nil {
-				return err
+				return false, err
 			}
 			data = d
 		}
 		data = sg.replaceAll(data)
 	}
 	if data == nil {
-		return nil
+		return false, nil
 	}
-	return r.setBody(data)
+	return true, r.setBody(data)
 }

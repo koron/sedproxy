@@ -50,6 +50,9 @@ func run(ctx context.Context) error {
 		return errors.New("no messages, check -messages")
 	}
 	defaultSubstitution, err = LoadSubstitutions(optMsgs)
+	if err != nil {
+		return err
+	}
 
 	p := newProxy(tu, defaultSubstitution)
 	srv := &http.Server{

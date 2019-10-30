@@ -39,9 +39,9 @@ func (p *Proxy) filterRequest(r *http.Request) {
 
 func (p *Proxy) filterResponse(r *http.Response) error {
 	st := time.Now()
-	err := p.subst.Rewrite(r)
+	ok, err := p.subst.Rewrite(r)
 	d := time.Since(st)
-	if optAccessLog {
+	if ok && optAccessLog {
 		log.Printf("rewrite %s in %s", r.Request.URL.Path, d)
 	}
 	return err
