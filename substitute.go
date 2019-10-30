@@ -1,14 +1,10 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
-	"io/ioutil"
-	"mime"
 	"net/http"
 	"os"
 	"regexp"
-	"strconv"
 )
 
 // SubstItem is an item for substitution.
@@ -150,33 +146,11 @@ func LoadSubstitutions(name string) (Substitutions, error) {
 	return v, nil
 }
 
-func mediaType(r *http.Response) string {
-	ct := r.Header.Get("Content-Type")
-	if ct == "" {
-		return ""
-	}
-	mt, _, err := mime.ParseMediaType(ct)
-	if err != nil {
-		return ""
-	}
-	return mt
-}
-
-func readBody(r *http.Response) ([]byte, error) {
-	return ioutil.ReadAll(r.Body)
-}
-
-func setBody(r *http.Response, b []byte) {
-	br := bytes.NewReader(b)
-	r.Body = ioutil.NopCloser(br)
-	r.Header.Set("Content-Length", strconv.Itoa(br.Len()))
-	r.ContentLength = int64(br.Len())
-}
-
 // Rewrite rewrites http.Response by substitutions.
-func (s Substitutions) Rewrite(r *http.Response) error {
-	mt := mediaType(r)
-	path := r.Request.URL.Path
+func (s Substitutions) Rewrite(r0 *http.Response) error {
+	r := newResponse(r0)
+	mt := r.mediaType()
+	path := r.path()
 	var data []byte
 	for _, sg := range s {
 		if !sg.isMatch(mt, path) {
@@ -184,7 +158,7 @@ func (s Substitutions) Rewrite(r *http.Response) error {
 		}
 		if data == nil {
 			// read request body once.
-			d, err := readBody(r)
+			d, err := r.readBody()
 			if err != nil {
 				return err
 			}
@@ -195,6 +169,5 @@ func (s Substitutions) Rewrite(r *http.Response) error {
 	if data == nil {
 		return nil
 	}
-	setBody(r, data)
-	return nil
+	return r.setBody(data)
 }

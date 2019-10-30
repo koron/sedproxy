@@ -40,14 +40,11 @@ func (p *Proxy) filterRequest(r *http.Request) {
 func (p *Proxy) filterResponse(r *http.Response) error {
 	st := time.Now()
 	err := p.subst.Rewrite(r)
-	if err != nil {
-		return err
-	}
 	d := time.Since(st)
 	if optAccessLog {
 		log.Printf("rewrite %s in %s", r.Request.URL.Path, d)
 	}
-	return nil
+	return err
 }
 
 func (p *Proxy) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
