@@ -3,27 +3,27 @@
     "path": "^.*$",
     "items": [
       {
-        "src": "ホーム",
+        "srcRx": "ホーム",
         "rep": "Home"
       },
       {
-        "src": "ニュース",
+        "srcRx": "ニュース",
         "rep": "News"
       },
       {
-        "src": "記事",
+        "srcRx": "記事",
         "rep": "Articles"
       },
       {
-        "src": "ブログ",
+        "srcRx": "ブログ",
         "rep": "Blog"
       },
       {
-        "src": "タグ",
+        "srcRx": "タグ",
         "rep": "Tags"
       },
       {
-        "src": "ソフトウェア",
+        "srcRx": "ソフトウェア",
         "rep": "Software"
       }
     ]
@@ -32,19 +32,19 @@
     "path": "^/.*$",
     "items": [
       {
-        "src": "店主([a-zA-Z]+)",
+        "srcRx": "店主([a-zA-Z]+)",
         "rep": "$1 the owner"
       },
       {
-        "src": "最近の記事",
+        "srcRx": "最近の記事",
         "rep": "Recent posts"
       },
       {
-        "src": "いらっしゃいませ",
+        "srcRx": "いらっしゃいませ",
         "rep": "Welcome to my site"
       },
       {
-        "src": "沿革",
+        "srcRx": "沿革",
         "rep": "History"
       }
     ]

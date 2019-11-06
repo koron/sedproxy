@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"os"
@@ -9,23 +10,36 @@ import (
 
 // SubstItem is an item for substitution.
 type SubstItem struct {
-	Src  string `json:"src"`
-	Repl string `json:"rep"`
+	Src   string `json:"src"`
+	SrcRx string `json:"srcRx"`
+	Repl  string `json:"rep"`
 
 	rxSrc *regexp.Regexp
+	src   []byte
 	repl  []byte
 }
 
 func (si *SubstItem) replaceAll(data []byte) []byte {
-	return si.rxSrc.ReplaceAll(data, si.repl)
+	if len(si.src) > 0 {
+		data = bytes.ReplaceAll(data, si.src, si.repl)
+	}
+	if si.rxSrc != nil {
+		data = si.rxSrc.ReplaceAll(data, si.repl)
+	}
+	return data
 }
 
 func (m *SubstItem) prepare() error {
-	rx, err := regexp.Compile(m.Src)
-	if err != nil {
-		return err
+	if m.Src != "" {
+		m.src = []byte(m.Src)
 	}
-	m.rxSrc = rx
+	if m.SrcRx != "" {
+		rx, err := regexp.Compile(m.SrcRx)
+		if err != nil {
+			return err
+		}
+		m.rxSrc = rx
+	}
 	m.repl = []byte(m.Repl)
 	return nil
 }

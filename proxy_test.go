@@ -15,7 +15,7 @@ var proxyServer *httptest.Server
 func TestMain(m *testing.M) {
 	subst := Substitutions{
 		{Path: `^/001/[^/]*\.html$`, Items: SubstItems{
-			{Src: `This is (\d+) YEN`, Repl: "これは $1 円です"},
+			{SrcRx: `This is (\d+) YEN`, Repl: "これは $1 円です"},
 		}},
 	}
 	err := subst.prepare()

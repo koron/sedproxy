@@ -88,11 +88,15 @@ items:
           A pair of regexp pattern and replacement text.
         type: object
         properties:
-          src:
+          srcRx:
             type: string
             description: |
               A regexp pattern to match with "body" of HTTP response.
               See <https://golang.org/pkg/regexp/syntax/> for the syntax.
+          src:
+            type: string
+            description: |
+              A literal string to replace.
           repl:
             type: string
             description: |
