@@ -3,27 +3,27 @@
     "path": "^.*$",
     "items": [
       {
-        "srcRx": "ホーム",
+        "src": "ホーム",
         "rep": "Home"
       },
       {
-        "srcRx": "ニュース",
+        "src": "ニュース",
         "rep": "News"
       },
       {
-        "srcRx": "記事",
+        "src": "記事",
         "rep": "Articles"
       },
       {
-        "srcRx": "ブログ",
+        "src": "ブログ",
         "rep": "Blog"
       },
       {
-        "srcRx": "タグ",
+        "src": "タグ",
         "rep": "Tags"
       },
       {
-        "srcRx": "ソフトウェア",
+        "src": "ソフトウェア",
         "rep": "Software"
       }
     ]
@@ -36,15 +36,15 @@
         "rep": "$1 the owner"
       },
       {
-        "srcRx": "最近の記事",
+        "src": "最近の記事",
         "rep": "Recent posts"
       },
       {
-        "srcRx": "いらっしゃいませ",
+        "src": "いらっしゃいませ",
         "rep": "Welcome to my site"
       },
       {
-        "srcRx": "沿革",
+        "src": "沿革",
         "rep": "History"
       }
     ]

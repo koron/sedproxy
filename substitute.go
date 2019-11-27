@@ -21,10 +21,10 @@ type SubstItem struct {
 
 func (si *SubstItem) replaceAll(data []byte) []byte {
 	if len(si.src) > 0 {
-		data = bytes.ReplaceAll(data, si.src, si.repl)
+		return bytes.ReplaceAll(data, si.src, si.repl)
 	}
 	if si.rxSrc != nil {
-		data = si.rxSrc.ReplaceAll(data, si.repl)
+		return si.rxSrc.ReplaceAll(data, si.repl)
 	}
 	return data
 }
