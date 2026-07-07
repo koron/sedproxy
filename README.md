@@ -2,7 +2,6 @@
 
 [![GoDoc](https://godoc.org/github.com/koron/sedproxy?status.svg)](https://godoc.org/github.com/koron/sedproxy)
 [![CircleCI](https://img.shields.io/circleci/project/github/koron/sedproxy/master.svg)](https://circleci.com/gh/koron/sedproxy/tree/master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/koron/sedproxy)](https://goreportcard.com/report/github.com/koron/sedproxy)
 
 sedproxy is a HTTP reverse proxy, which rewrite HTML with regular expressions.
 

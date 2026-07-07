@@ -75,7 +75,7 @@ type SubstGroup struct {
 }
 
 var defaultMtypes = map[string]struct{}{
-	"text/html": struct{}{},
+	"text/html": {},
 }
 
 func (sg *SubstGroup) isMatch(mt, path string) bool {
