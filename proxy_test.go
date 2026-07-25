@@ -23,7 +23,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("prepare failed: %s", err)
 	}
 
-	fs := httptest.NewServer(http.FileServer(http.Dir("./testdata")))
+	fs := httptest.NewServer(http.FileServer(http.Dir("./_testdata")))
 	u, err := url.Parse(fs.URL)
 	if err != nil {
 		fs.Close()
