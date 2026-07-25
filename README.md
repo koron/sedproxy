@@ -1,7 +1,8 @@
 # koron/sedproxy
 
-[![GoDoc](https://godoc.org/github.com/koron/sedproxy?status.svg)](https://godoc.org/github.com/koron/sedproxy)
-[![CircleCI](https://img.shields.io/circleci/project/github/koron/sedproxy/master.svg)](https://circleci.com/gh/koron/sedproxy/tree/master)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/koron/sedproxy)](https://pkg.go.dev/github.com/koron/sedproxy)
+[![Actions/Go](https://github.com/koron/sedproxy/actions/workflows/go.yml/badge.svg)](https://github.com/koron/sedproxy/actions/workflows/go.yml)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/koron/sedproxy)
 
 sedproxy is a HTTP reverse proxy, which rewrite HTML with regular expressions.
 
